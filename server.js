@@ -1,7 +1,17 @@
 const express = require('express');
 const app     = express();
-
+const bodyParser = require('body-parser');
 require('./db/db')
+
+const authorsController = require('./controllers/authors');
+
+// bodyParser is middleware that makes the body
+// of our requests readable then send it to the next function
+app.use(bodyParser.urlencoded({extended: false}));
+
+
+app.use('/authors', authorsController);
+
 
 
 
