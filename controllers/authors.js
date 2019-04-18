@@ -73,7 +73,6 @@ router.put('/:id', (req, res)=>{
     } else {
       res.redirect('/authors');
     }
-
   });
 });
 module.exports = router;

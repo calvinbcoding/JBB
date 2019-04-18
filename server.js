@@ -5,7 +5,7 @@ const methodOverride = require('method-override');
 require('./db/db')
 
 const authorsController = require('./controllers/authors');
-
+const articlesController = require('./controllers/articles');
 // bodyParser is middleware that makes the body
 // of our requests readable then send it to the next function
 app.use(bodyParser.urlencoded({extended: false}));
@@ -13,7 +13,7 @@ app.use(methodOverride('_method'));
 
 
 app.use('/authors', authorsController);
-
+app.use('/articles', articlesController);
 
 
 
