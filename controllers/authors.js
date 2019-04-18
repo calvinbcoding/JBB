@@ -7,6 +7,18 @@ router.get('/new', (req, res) => {
   res.render('authors/new.ejs');
 });
 
+router.get('/:id', (req, res) => {
+  Author.findById(req.params.id, (err, foundAuthor) =>{
+    if(err){
+      res.send(err);
+    } else {
+      res.render('authors/show.ejs', {
+        author: foundAuthor
+      });
+    }
+  });
+});
+
 // index route
 router.get('/', (req, res) => {
   // show all of the resource
