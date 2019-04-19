@@ -1,7 +1,7 @@
 const express = require('express');
 const router  = express.Router();
 const Author  = require('../models/authors');
-
+const Article = require('../models/articles');
 
 router.get('/new', (req, res) => {
   res.render('authors/new.ejs');
@@ -21,10 +21,21 @@ router.get('/:id', (req, res) => {
 
 router.delete('/:id', (req, res)=> {
   Author.findByIdAndRemove(req.params.id, (err, deletedAuthor) => {
+
+    // Delete the Articles from the Author in the Articles model
     if(err){
       res.send(err);
     } else {
-      res.redirect('/authors');
+      console.log(deletedAuthor, "<--- deletedAuthor");
+      Article.deleteMany({
+        _id: {
+          $in: deletedAuthor.articles // array of article ids to delete
+        }
+      }, (err, data) => {
+        console.log(data, ' after the remove')
+        res.redirect('/authors');
+      })
+
     }
   })
 })
