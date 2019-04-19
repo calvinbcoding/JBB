@@ -55,20 +55,19 @@ router.post('/', (req, res)=>{
   });
 });
 
-
+// articles show route
 router.get('/:id', (req, res)=>{
-  Article.findById(req.params.id, (err, foundArticle)=>{
-    if(err){
-      res.send(err);
-    } else {
-
+  // req.params.id is the articles id
+  Author.findOne({'articles': req.params.id})
+    .populate('articles')
+    .exec((err, foundAuthor) => {
+      console.log(foundAuthor, "<---- foundAuthor in article show route");
       res.render('articles/show.ejs', {
-        article: foundArticle
-      });
+        author: foundAuthor,
+        article: foundAuthor.articles[0]
+      })
+    })
 
-    }
-
-  });
 });
 
 router.get('/:id/edit', (req, res)=>{
