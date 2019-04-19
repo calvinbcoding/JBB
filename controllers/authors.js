@@ -8,18 +8,14 @@ router.get('/new', (req, res) => {
 });
 
 router.get('/:id', (req, res) => {
-  Author.findById(req.params.id, (err, foundAuthor) =>{
-    if(err){
-      res.send(err);
-    } else {
-
-      console.log(foundAuthor)
-
+  Author.findById(req.params.id)
+    .populate('articles')
+    .exec((err, foundAuthor) => {
+      console.log(foundAuthor, "<----- foundAuthor in the show route")
       res.render('authors/show.ejs', {
         author: foundAuthor
       });
-    }
-  });
+    });
 });
 
 router.delete('/:id', (req, res)=> {
