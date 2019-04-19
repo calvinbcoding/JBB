@@ -71,24 +71,64 @@ router.get('/:id', (req, res)=>{
 });
 
 router.get('/:id/edit', (req, res)=>{
-  Article.findById(req.params.id, (err, foundArticle)=>{
-    if(err){
-      res.send(err);
-    } else {
-      res.render('articles/edit.ejs', {
-        article: foundArticle
-      });
-    }
-  });
+  // All the authors
+  // know which author the article belongs too
+  // article
+  Author.find({}, (err, allAuthors) => {
+    Author.findOne({'articles': req.params.id})
+      .populate({path: 'articles', match: {_id: req.params.id}})
+      .exec((err, foundArticleAuthor) => {
+        console.log(foundArticleAuthor, "<==== foundArticleAuthor")
+        if(err){
+          res.send(err);
+        } else {
+          res.render('articles/edit.ejs', {
+            article: foundArticleAuthor.articles[0],
+            authors: allAuthors,
+            articleAuthor: foundArticleAuthor
+          })
+        }
+      })
+
+  })
 });
 
 router.put('/:id', (req, res)=>{
-  Article.findByIdAndUpdate(req.params.id, req.body, {new: true},(err, foundArticle)=>{
-    if(err){
-      res.send(err);
-    } else {
-       res.redirect('/articles');
-    }
+ //if the author is changed,
+ // 1 . then the article goes into a different author's array
+ // 2. and is removed from the original author's array of articles
+  Article.findByIdAndUpdate(req.params.id, req.body, {new: true},(err, updatedArticle)=>{
+    // find the author that owns the article
+    Author.findOne({'articles': req.params.id}, (err, foundAuthor) => {
+
+      if(foundAuthor._id.toString() !== req.body.authorId){
+        // so if I'm inside of the if
+        // that means the client sent a request with the author changed
+        foundAuthor.articles.remove(req.params.id);
+        // removed the article reference from the original author ^
+        foundAuthor.save((err, savedFoundAuthor) => {
+          // Find the new author and add the article refence to its articles array
+          Author.findById(req.body.authorId, (err, newAuthor) => {
+
+            // updated article is reference in the Article query at the top
+            newAuthor.articles.push(updatedArticle);
+            newAuthor.save((err, savedNewAuthor) => {
+              res.redirect('/articles/' + req.params.id);
+            })
+
+          })
+
+        })
+      } else {
+        // if the author didn't change everything was taken care of in
+        // the orginal Article query on line 100
+        res.redirect('/articles/' + req.params.id)
+      }
+
+
+    })
+
+
 
   });
 });
