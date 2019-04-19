@@ -59,7 +59,7 @@ router.post('/', (req, res)=>{
 router.get('/:id', (req, res)=>{
   // req.params.id is the articles id
   Author.findOne({'articles': req.params.id})
-    .populate('articles')
+    .populate({path: 'articles', match: {_id: req.params.id}})
     .exec((err, foundAuthor) => {
       console.log(foundAuthor, "<---- foundAuthor in article show route");
       res.render('articles/show.ejs', {
