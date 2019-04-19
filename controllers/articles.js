@@ -4,8 +4,8 @@ const Article = require('../models/articles');
 const Author  = require('../models/authors');
 
 router.get('/new', (req, res)=>{
-  // I want to add all the authors, so user can select
-  // select the author the article belongs to  when they are going to create an article
+  // Here we are finding all the authros
+  // so we can create the select menu inside of articles/new
   Author.find({}, (err, allAuthors) => {
     if(err){
       res.send(err);
@@ -36,14 +36,21 @@ router.post('/', (req, res)=>{
     if(err){
       res.send(err);
     } else {
+
+       // Here we are finding the author that owns the article
+      // req.body.authorId What is is coming from look at the new route, at the secect menu
+      // what is the name property
       Author.findById(req.body.authorId, (err, foundAuthor) => {
         console.log("===========================")
-        console.log(foundAuthor);
+        console.log(foundAuthor, "<=== found author in article Post");
         console.log("===========================")
+
+        // after we found the author we are pushing the reference into the authors articles array
+            // What is the array? Its the thing we defined in the model, also look at the console.log on line 45
         foundAuthor.articles.push(createdArticle);
         foundAuthor.save((err, savedAuthor) => {
           console.log('============================')
-          console.log(savedAuthor, ' <----------');
+          console.log(savedAuthor, ' <---------- savedAuthor in article post route');
           console.log('============================')
           res.redirect('/articles');
         });
@@ -71,9 +78,14 @@ router.get('/:id', (req, res)=>{
 });
 
 router.get('/:id/edit', (req, res)=>{
-  // All the authors
-  // know which author the article belongs too
-  // article
+   // For the edit, we need to allow the user to Select all the authors when they are editing the
+  // author, thats why we are performing Author.find
+
+  // then we need to find the article and the author who owns the article that we
+  // are trying to edit
+  // thats why we are using Author.findOne
+  // we are using .populate to find all the articles
+  // we use match, to only populate the article that matches the article we are trying to edit
   Author.find({}, (err, allAuthors) => {
     Author.findOne({'articles': req.params.id})
       .populate({path: 'articles', match: {_id: req.params.id}})
