@@ -36,7 +36,21 @@ router.post('/', (req, res)=>{
     if(err){
       res.send(err);
     } else {
-      res.redirect('/articles');
+      Author.findById(req.body.authorId, (err, foundAuthor) => {
+        console.log("===========================")
+        console.log(foundAuthor);
+        console.log("===========================")
+        foundAuthor.articles.push(createdArticle);
+        foundAuthor.save((err, savedAuthor) => {
+          console.log('============================')
+          console.log(savedAuthor, ' <----------');
+          console.log('============================')
+          res.redirect('/articles');
+        });
+
+      });
+
+
     }
   });
 });
