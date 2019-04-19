@@ -95,12 +95,21 @@ router.put('/:id', (req, res)=>{
 
 router.delete('/:id', (req, res)=>{
   Article.findByIdAndRemove(req.params.id, (err, deletedArticle)=>{
-    if(err){
-      res.send(err);
-    } else {
-      res.redirect('/articles');
-    }
 
+    // find the author and then remove the articles id from their articles array of ids
+    Author.findOne({'articles': req.params.id}, (err, foundAuthor) => {
+      if(err){
+        res.send(err);
+      } else {
+        console.log(foundAuthor, "<---- foundAuthor in delete before I remove the article id")
+        foundAuthor.articles.remove(req.params.id);
+        // since we just mutated our document ^ , now we have to save
+        foundAuthor.save((err, updatedAuthor) => {
+          console.log(updatedAuthor, ' after the mutation');
+          res.redirect('/articles');
+        });
+      }
+    });
   });
 });
 

@@ -12,6 +12,7 @@ router.get('/:id', (req, res) => {
     .populate('articles')
     .exec((err, foundAuthor) => {
       console.log(foundAuthor, "<----- foundAuthor in the show route")
+
       res.render('authors/show.ejs', {
         author: foundAuthor
       });
