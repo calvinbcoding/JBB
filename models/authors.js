@@ -1,7 +1,12 @@
 const mongoose = require('mongoose');
+const Article  = require('./articles');
 
 const authorSchema = new mongoose.Schema({
-  name: String
+  name: String,
+  articles: [{
+    type: mongoose.Schema.Types.ObjectId,
+    ref: 'Article'
+  }]
 });
 
 // in mongodb it is creating an authors collection,

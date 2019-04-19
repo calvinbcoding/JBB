@@ -1,10 +1,21 @@
 const express = require('express');
 const router = express.Router();
 const Article = require('../models/articles');
-
+const Author  = require('../models/authors');
 
 router.get('/new', (req, res)=>{
-  res.render('articles/new.ejs');
+  // I want to add all the authors, so user can select
+  // select the author the article belongs to  when they are going to create an article
+  Author.find({}, (err, allAuthors) => {
+    if(err){
+      res.send(err);
+    } else {
+      res.render('articles/new.ejs', {
+        authors: allAuthors
+      });
+    }
+  });
+
 });
 
 
