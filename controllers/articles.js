@@ -109,10 +109,12 @@ router.put('/:id', (req, res)=>{
  //if the author is changed,
  // 1 . then the article goes into a different author's array
  // 2. and is removed from the original author's array of articles
+
+ // First update the article, theat the purpose of the Article query on line 114
   Article.findByIdAndUpdate(req.params.id, req.body, {new: true},(err, updatedArticle)=>{
     // find the author that owns the article
     Author.findOne({'articles': req.params.id}, (err, foundAuthor) => {
-
+      // Check to see if the author was changed by the client
       if(foundAuthor._id.toString() !== req.body.authorId){
         // so if I'm inside of the if
         // that means the client sent a request with the author changed
@@ -124,6 +126,7 @@ router.put('/:id', (req, res)=>{
 
             // updated article is reference in the Article query at the top
             newAuthor.articles.push(updatedArticle);
+            // save the document since we mutated it
             newAuthor.save((err, savedNewAuthor) => {
               res.redirect('/articles/' + req.params.id);
             })
@@ -146,6 +149,7 @@ router.put('/:id', (req, res)=>{
 });
 
 router.delete('/:id', (req, res)=>{
+  // Delete the article, is the purpose of line 153
   Article.findByIdAndRemove(req.params.id, (err, deletedArticle)=>{
 
     // find the author and then remove the articles id from their articles array of ids
@@ -164,17 +168,5 @@ router.delete('/:id', (req, res)=>{
     });
   });
 });
-
-
-
-
-
-
-
-
-
-
-
-
 
 module.exports = router;

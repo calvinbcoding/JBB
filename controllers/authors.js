@@ -8,6 +8,9 @@ router.get('/new', (req, res) => {
 });
 
 router.get('/:id', (req, res) => {
+
+  // We want to be able to access all the Author's article's not just thier id's
+  // thats why we are using .populate
   Author.findById(req.params.id)
     .populate('articles')
     .exec((err, foundAuthor) => {
@@ -27,6 +30,8 @@ router.delete('/:id', (req, res)=> {
       res.send(err);
     } else {
       console.log(deletedAuthor, "<--- deletedAuthor");
+      // This article is using the $in operator that will apply the operation deleteMany
+      // to all the ids that are inside of the deletedAuthor.articles
       Article.deleteMany({
         _id: {
           $in: deletedAuthor.articles // array of article ids to delete
