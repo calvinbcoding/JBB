@@ -47,6 +47,8 @@ router.delete('/:id', (req, res)=> {
 
 // index route
 router.get('/', (req, res) => {
+
+  console.log(req.session, ' inside of authors')
   // show all of the resource
   Author.find({}, (err, foundAuthors) => {
     if(err){
