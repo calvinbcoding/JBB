@@ -20,15 +20,23 @@ router.get('/new', (req, res)=>{
 
 
 router.get('/', (req, res)=>{
-  Article.find({}, (err, foundArticles)=>{
-    if(err){
-      res.send(err);
-    } else {
-      res.render('articles/index.ejs', {
-        articles: foundArticles
+  console.log(req.session, ' in articles index route');
+  if(req.session.logged === true){
+
+      Article.find({}, (err, foundArticles)=>{
+        if(err){
+          res.send(err);
+        } else {
+          res.render('articles/index.ejs', {
+            articles: foundArticles
+          });
+        }
       });
-    }
-  });
+  } else {
+    res.redirect('/auth/login');
+  }
+
+
 });
 
 router.post('/', (req, res)=>{
