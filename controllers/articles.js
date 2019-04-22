@@ -169,12 +169,7 @@ router.put('/:id', async (req, res) =>{
                 const newAuthor = await Author.findById(req.body.authorId);
                 newAuthor.articles.push(updatedArticle);
                 // now we are saving the new authors array
-                // Think about this Are both of these actions dependent on each
-                // other? Seriously sit and stare at your wall and think about this!
-
-                // If they are could you refactor this using Promise.all()
                 const savedNewAuthor = await newAuthor.save();
-                console.log('hitting')
                 // if you want to go back to the show page you can do something like this
                 res.redirect('/articles/' + req.params.id);
 
