@@ -37,9 +37,12 @@ router.post('/register', async (req, res) => {
   try {
     const createdUser = await User.create(userDbEntry);
 
-    console.log(createdUser);
+    // after you create the user, this is a great time to initialize you session object
+    // add properties to the session object
+    req.session.logged = true;
+    req.session.usersDbId = createdUser._id;
 
-    res.send('you registered');
+    res.redirect('/authors');
 
   } catch(err){
     res.send(err)
@@ -50,17 +53,13 @@ router.post('/register', async (req, res) => {
 });
 
 
-
+// To compare our password and the hash we use compareSync
+// bcrypt.compareSync('you plain text password', 'hashedPassword')  // return true or false
 
 // make the form in login.ejs make a request to this
 router.post('/login', (req, res) => {
 
-  //2 set a property to the session called username that is equal to the username from the form
-  req.session.username = req.body.username;
-  // set a property to the session called logged and make it true
-  req.session.logged = true;
-  // So now the client is now logged in ^
-  res.redirect('/authors');
+
 });
 
 
