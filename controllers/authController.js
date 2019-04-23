@@ -5,7 +5,9 @@ const bcrypt = require('bcryptjs');
 
 
 router.get('/login', (req, res) => {
-  res.render('login.ejs')
+  res.render('login.ejs', {
+    message: req.session.message
+  })
 });
 
 
@@ -57,7 +59,45 @@ router.post('/register', async (req, res) => {
 // bcrypt.compareSync('you plain text password', 'hashedPassword')  // return true or false
 
 // make the form in login.ejs make a request to this
-router.post('/login', (req, res) => {
+router.post('/login', async (req, res) => {
+
+  // Query the database to see if the user exists
+  try {
+    const foundUser = await User.findOne({'username': req.body.username});
+
+    // Is foundUser a truthy value, if it is its the user object,
+    // if we didn't find anything then foundUser === null a falsy value
+    if(foundUser){
+
+      // since the user exist compare the passwords
+      if(bcrypt.compareSync(req.body.password, foundUser.password) === true){
+        // set up the session
+        req.session.logged = true;
+        req.session.usersDbId = foundUser._id;
+
+        console.log(req.session, ' successful in login')
+        res.redirect('/authors');
+
+      } else {
+        // redirect them back to the login with a message
+        req.session.message = "Username or password is incorrect";
+        res.redirect('/auth/login');
+      }
+
+    } else {
+
+      req.session.message = 'Username or Password is incorrect';
+
+      res.redirect('/auth/login');
+    }
+
+
+  } catch(err){
+    res.send(err);
+  }
+
+
+
 
 
 });
